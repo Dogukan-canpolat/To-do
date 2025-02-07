@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: monospace;
+        }
+
+        .Main {
+            width: 700px;
+            height: 700px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+            box-shadow: 1px 3px 7px black;
+            background-color: white;
+            text-align: center;
+        }
+
+        body {
+            background-color: rgb(156, 204, 231);
+        }
+
+        .todoForm {
+            padding-top: 100px;
+        }
+
+        #textİnput {
+            width: 500px;
+            height: 30px;
+            border: none;
+            box-shadow: 1px 1px 4px black;
+            margin-top: 10px;
+        }
+
+        button {
+            margin-top: 20px;
+            border: none;
+            background-color: white;
+            width: 100px;
+            height: 50px;
+            border-radius: 4px;
+            font-style: italic;
+            font-weight: bold;
+            font-size: large;
+            box-shadow: 1px 1px 4px black;
+        }
+
+        button:hover {
+            box-shadow: 1px 1px 10px black;
+            cursor: pointer;
+        }
+
+        button:active {
+            color: white;
+            background-color: black;
+        }
+
+        ul {
+            list-style-type: none;
+            margin-top: 150px;
+        }
+
+        .eleman {
+            font-size: large;
+            font-weight: bold;
+            text-align: left;
+            box-shadow: 1px 1px 1px black;
+            display: flex;
+            justify-content: space-between;
+            padding: 3px;
+        }
+
+        .alertMes {
+            margin-top: 20px;
+        }
+        .footer{
+            bottom: 8px;
+            left: 8px;
+            font-weight: bold;
+            font-size: 50px;
+            font-family: cursive;
+            position: absolute;
+            color: white;
+        }
+        .link{
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="Main">
+        <h1>Todo-list</h1>
+        <div class="todoForm">
+            <h2>Not</h2>
+            <input id="textİnput" type="text">
+            <br>
+            <button id="button" onclick=addTodo()>Kaydet</button>
+        </div>
+        <div>
+            <ul class="lists">
+
+            </ul>
+        </div>
+    </div>
+    <footer>
+        <p class="footer">Doğukan Canpolat</p>
+    </footer>
+    <script>
+        const liste = document.querySelector(".lists");
+        const mesaj = document.querySelector("#textİnput");
+        const button = document.querySelector("#button");
+        const todoForm = document.querySelector(".todoForm");
+        
+        eventListeners();
+
+        function eventListeners(){
+            document.addEventListener("DOMContentLoaded", loadAllTodosFromUI);
+            document.addEventListener("click", deleteTodo);
+        }
+        function deleteTodo(e){
+            
+            if(e.target.className == "link"){
+                e.target.parentElement.parentElement.remove();
+                deleteTodoFromStorage(e.target.parentElement.parentElement.textContent);
+                
+            }
+        }
+        function deleteTodoFromStorage(deletedTodo){
+            let todos = getTodosFromStorage();
+
+            todos.forEach(function(todo,index){
+                if(todo + "Sil" === deletedTodo){
+                    todos.splice(index,1);
+                }
+            });
+            localStorage.setItem("todos",JSON.stringify(todos));
+        }
+        function loadAllTodosFromUI(){
+            let todos = getTodosFromStorage();
+
+            todos.forEach(function(todo){
+                addTodoToUI(todo);
+            });
+        }
+
+        function addTodo(e) {
+            const newTodo = mesaj.value.trim();
+            if (newTodo == "") {
+                const alertMessage = document.createElement("h3");
+                alertMessage.className = "alertMes";
+                alertMessage.appendChild(document.createTextNode("Lütfen boş alanları doldurun!"));
+                todoForm.appendChild(alertMessage);
+                setTimeout(function () {
+                    alertMessage.remove();
+                }, 1000)
+
+
+            } else {
+                addTodoToUI(newTodo);
+                addTodoToStorage(newTodo);
+            }
+
+
+        }
+        function getTodosFromStorage() {
+            let todos;
+            if (localStorage.getItem("todos") === null) {
+                todos = [];
+            } else {
+                todos = JSON.parse(localStorage.getItem("todos"));
+            }
+            return todos;
+        }
+        function addTodoToStorage(newTodo){
+            let todos = getTodosFromStorage();
+
+            todos.push(newTodo);
+
+            localStorage.setItem("todos",JSON.stringify(todos));
+        }
+        function addTodoToUI(newTodo) {
+            const List = document.createElement("li");
+            List.className = "eleman";
+            const div = document.createElement("div");
+            const link = document.createElement("a");
+            link.className = "link";
+            link.appendChild(document.createTextNode("Sil"));
+
+
+            List.appendChild(document.createTextNode(newTodo));
+            List.appendChild(div);
+            div.appendChild(link);
+            liste.appendChild(List);
+            
+            
+            mesaj.value = "";
+
+
+        }
+
+    </script>
+</body>
+
+</html>
